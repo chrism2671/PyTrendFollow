@@ -7,7 +7,8 @@ daily_volatility_target = annual_volatility_target / np.sqrt(252)
 capital = 500000
 # Trading rules to use by default if not specified in the instrument definition
 default_rules = ('ewmac', 'carry', )
-
+# Scheduled time for trading
+portfolio_sync_time = '07:00'
 
 rule_weights = {'carry': 1.0761308295764749,
                 'ewmac16': 0.94565802638498464,

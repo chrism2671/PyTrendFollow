@@ -2,6 +2,7 @@
 from trading.ibstate import IBstate
 import trading.portfolio
 import config.portfolios
+import config.strategy
 from trading.account import Account
 from core.utility import notify_send
 from time import sleep
@@ -80,7 +81,7 @@ def main():
     # pd.set_option('display.width', width[0]) # set that as the max width in Pandas
     # pd.set_option('display.width', int(columns)) # set that as the max width in Pandas
 
-    set_schedule('07:00')
+    set_schedule(config.strategy.portfolio_sync_time)
 
     if "--now" in sys.argv:
         sync_trades()
