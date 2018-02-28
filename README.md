@@ -34,7 +34,7 @@ To use MySQL as the data storage backend (optional, default is HDF5), you'll nee
 
 For automated trading with Interactive Brokers, install the latest
  [TWS terminal](https://www.interactivebrokers.com/en/index.php?f=16040)
-   or [Gateway](https://www.interactivebrokers.com/en/index.php?f=16457).
+   or [Gateway](https://www.interactivebrokers.com/en/index.php?f=16457). You'll need to enable the API and set it to port 4001.
 
 ### Code
 
