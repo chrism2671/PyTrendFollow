@@ -1,0 +1,129 @@
+
+
+"""
+This file defines spot prices for futures
+"""
+spots_definitions = [
+
+    # Hard
+    {
+        'name': 'copper',
+        'price_data': ['quandl'],
+        'quandl_database': 'LME',
+        'quandl_symbol': 'PR_CU',
+        'quandl_column': 'Cash Buyer',
+        'multiplier': (1/2204.62)
+    },
+    {
+        'name': 'gold',
+        'price_data': ['quandl'],
+        'quandl_database': 'LBMA',
+        'quandl_symbol': 'GOLD',
+        'quandl_column': 'USD (AM)',
+    },
+    {
+        'name': 'pallad',
+        'price_data': ['quandl'],
+        'quandl_database': 'LPPM',
+        'quandl_symbol': 'PALL',
+        'quandl_column': 'USD AM',
+    },
+    {
+        'name': 'platinum',
+        'price_data': ['quandl'],
+        'quandl_database': 'LPPM',
+        'quandl_symbol': 'PLAT',
+        'quandl_column': 'USD AM',
+    },
+    {
+        'name': 'silver',
+        'price_data': ['quandl'],
+        'quandl_database': 'LBMA',
+        'quandl_symbol': 'SILVER',
+        'quandl_column': 'USD',
+    },
+
+    # Index
+    {
+        'name': 'hsi',
+        'price_data': ['ib'],
+        'ib_symbol': 'HSI',
+        'ib_exchange': 'HKFE',
+        'denomination': 'HKD',
+        'sec_type': 'IND',
+    },
+    {
+        'name': 'smi',
+        'price_data': ['ib'],
+        'ib_symbol': 'SMI',
+        'ib_exchange': 'SOFFEX',
+        'denomination': 'CHF',
+        'sec_type': 'IND',
+    },
+    {
+        'name': 'eurostoxx',
+        'price_data': ['ib'],
+        'ib_symbol': 'ESTX50',
+        'ib_exchange': 'DTB',
+        'denomination': 'EUR',
+        'sec_type': 'IND',
+    },
+
+    # Bitmex
+    {
+        'name': 'xbj',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.XBTJPY',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'bat',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.BATXBT',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'dash',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.DASHXBT',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'ethereum',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.ETHXBT',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'litecoin',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.LTCXBT',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'monero',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.XMRXBT',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'stellar',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.STRXBT',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'ripple',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.XRPXBT',
+        'bitmex_column': 'close'
+    },
+    {
+        'name': 'zcash',
+        'price_data': ['bitmex'],
+        'bitmex_symbol': '.ZECXBT',
+        'bitmex_column': 'close'
+    },
+]
+
+spots_all = {x['name']: x for x in spots_definitions}

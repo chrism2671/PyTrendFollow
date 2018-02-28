@@ -1,0 +1,16 @@
+numpy
+scipy
+matplotlib
+pandas
+quandl
+seaborn
+pymongo
+pyprind
+IbPy2
+schedule
+multiprocessing_on_dill
+bravado
+pytest
+git+git://github.com/bashtage/arch.git
+mysql-connector==2.1.6
+--pre SQLAlchemy --upgrade

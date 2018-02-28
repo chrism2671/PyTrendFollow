@@ -1,0 +1,9 @@
+.*
+.**
+!/.gitignore
+*.pyc
+cache/*
+/*.ipynb
+config/settings.py
+config/strategy.py
+ignore/*
