@@ -17,6 +17,9 @@ logger = get_logger('portfolio')
 
 
 class Portfolio(object):
+    """
+    Portfolio is an object that is a group of instruments, with calculated positions based on the weighting and volatility target.
+    """
 
     def __init__(self, weights=1, instruments=None):
         self.instruments = Instrument.load(instruments)
@@ -31,6 +34,9 @@ class Portfolio(object):
 
     @lru_cache(maxsize=8)
     def curve(self, **kw):
+        """
+        Returns an AccountCurve for this Portfolio.
+        """
         kw2={'portfolio_weights': self.valid_weights()}
         kw2.update(kw)
         return accountCurve(list(self.valid_instruments().values()), **kw2)
@@ -44,6 +50,9 @@ class Portfolio(object):
 ### Utility Functions ###################################################################
 
     def validate(self):
+        """
+        Runs Instrument.validate for every Instrument in the Portfolio and returns a DataFrame. Used for trading.
+        """
         import concurrent.futures
         bar = pyprind.ProgBar(len(self.instruments.values()), title='Validating instruments')
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
@@ -58,6 +67,9 @@ class Portfolio(object):
         return d
 
     def instrument_stats(self):
+        """
+        Returns individual metrics for every Instrument in the Portfolio. Not used for trading, just for research.
+        """
         with closing(Pool()) as pool:
             df = pd.DataFrame(dict(pool.map(lambda x: (x.name, x.curve().stats_list()),
                                             self.valid_instruments().values()))).transpose()
@@ -65,40 +77,73 @@ class Portfolio(object):
 
     @lru_cache(maxsize=1)
     def inst_calc(self):
+        """
+        Calculate the base positions for every instrument, before applying portfolio-wide weighting and volatility scaling.
+        """
         with closing(Pool()) as pool:
             d = dict(pool.map(lambda x: (x.name, x.calculate()), self.valid_instruments().values()))
         return d
 
     @lru_cache(maxsize=1)
     def panama_prices(self):
+        """
+        Returns a dataframe with the panama prices of every instrument. Not used for trading.
+        """
         return pd.DataFrame({k: v['panama_prices'] for k, v in self.inst_calc().items()})
 
     def point_values(self):
+        """
+        Returns a series with the point values of every instrument. Not used for trading.
+        """
         return pd.Series({k: v.point_value for k, v in self.valid_instruments().items()})
 
     def corr(self):
+        """
+        Returns a correlation matrix of the all the instruments with trading rules applied, with returns bagged by week.
+        
+        Not used for trading. Intended to be used in Jupyter.
+        """
         df = self.curve().returns().resample('W').sum().replace(0, np.nan).corr()
         cm = seaborn.dark_palette("green", as_cmap=True)
         s = df.style.background_gradient(cmap=cm)
         return s
 
     def corr_pp(self):
+        """
+        Returns a correlation matrix of all the instruments panama prices, with returns bagged by week.
+        
+        Not used for trading. Intended to be used in Jupyter.
+        """
+        
         df = self.panama_prices().diff().resample('W').sum().corr()
         cm = seaborn.dark_palette("green", as_cmap=True)
         s = df.style.background_gradient(cmap=cm)
         return s
 
     def cov(self):
+        """
+        Returns the covariance matrix of all the instruments with trading rules applied.
+        
+        Not used for trading. Intended to be used in Jupyter.
+        """
         return self.curve().returns().resample('W').sum().cov()
 
     def plot(self):
+        """
+        Returns a plot of the cumulative returns of the Portfolio 
+        """
         return self.returns().sum(axis=1).cumsum().plot()
 
     def instrument_count(self):
+        """
+        The number of instruments being traded by date.
+        """
         return np.maximum.accumulate((~np.isnan(self.panama_prices())).sum(axis=1)).plot()
 
     def bootstrap_pool(self, **kw):
-        """Bootstrap forecast weights using all the data in the portfolio."""
+        """
+        Bootstrap forecast weights using all the data in the portfolio.
+        """
         # m = ProcessPoolExecutor().map(lambda x: x.bootstrap(), self.instruments.values())
         bs = {k: v.bootstrap(**kw) for k, v in self.valid_instruments().items()}
         self.bs = pd.DataFrame.from_dict(bs)
@@ -106,6 +151,11 @@ class Portfolio(object):
         return self.bs
 
     def bootstrap_portfolio(self, **kw):
+        """
+        Bootstrap the instrument weights to work out the 'best' combination of instruments to use.
+        
+        Strongly advise against using this and to handcraft instrument weights yourself as this method may lead to overfitting. 
+        """
         self.bp_weights = bp.bootstrap(self, **kw)
         return self.bp_weights
 
@@ -133,6 +183,9 @@ class Portfolio(object):
 
     @lru_cache(maxsize=1)
     def forecasts(self, **kw):
+        """
+        Returns a dict of forecasts for every Instrument in the Portfolio.
+        """
         with closing(Pool()) as pool:
             d = dict(pool.map(lambda x: (x.name, x.forecasts(**kw)),
                               self.valid_instruments().values()))
@@ -140,6 +193,9 @@ class Portfolio(object):
 
     @lru_cache(maxsize=1)
     def weighted_forecasts(self, **kw):
+        """
+        Returns a dict of weighted forecasts for every Instrument in the Portfolio.
+        """
         with closing(Pool()) as pool:
             d = dict(pool.map(lambda x: (x.name, x.weighted_forecast(**kw)),
                               self.valid_instruments().values()))
@@ -147,14 +203,18 @@ class Portfolio(object):
 
     @lru_cache(maxsize=1)
     def market_prices(self):
-        """Returns the market prices of the instruments based on quandl data,
-        for the currently traded contract."""
+        """
+        Returns the market prices of the instruments, for the currently traded contract.
+        """
         mp = pd.DataFrame({k: v['market_price'] for k, v in self.inst_calc().items()}).ffill()
         return pd.DataFrame({k: mp[k].loc[self.inst_calc()[k]['roll_progression']\
                               .to_frame().set_index('contract', append=True).index].reset_index(
                               'contract', drop=True) for k in self.valid_instruments().keys()})
 
     def ibcode_to_inst(self, ib_code):
+        """
+        Take an IB symbol and return the Instrument.
+        """
         a = {k.ib_code: k for k in self.instruments.values()}
         try:
             return a[ib_code]
@@ -163,7 +223,9 @@ class Portfolio(object):
             return None
 
     def frontier(self, capital=500000):
-        """Work out what the ideal position should be"""
+        """
+        Returns a DataFrame of positions we want for a given capital. The last line represents today's trade.
+        """
         c = self.curve(capital=capital)
         f = c.positions.tail(1).iloc[0]
         f.index = pd.MultiIndex.from_tuples([(k, str(c.inst_calc()[k]['roll_progression'].
@@ -176,7 +238,9 @@ class Portfolio(object):
         return f
 
     def cache_clear(self):
-        """Clear the functools.lru_cache"""
+        """
+        Clear the functools.lru_cache
+        """
         self.inst_calc.cache_clear()
         self.panama_prices.cache_clear()
         self.forecasts.cache_clear()

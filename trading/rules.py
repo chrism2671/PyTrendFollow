@@ -4,9 +4,17 @@ from functools import partial
 from core.utility import norm_forecast, norm_vol
 
 def pickleable_ewmac(d, x):
+    """
+    Returns an exponentially weighted moving average crossover for a single series and period. 
+    """
     return d.ewm(span = x, min_periods = x*4).mean() - d.ewm(span = x*4, min_periods=x*4).mean()
 
 def ewmac(inst, **kw):
+    """
+    Exponentially weighted moving average crossover.
+    
+    Returns a DataFrame with four different periods.
+    """
     d = norm_vol(inst.panama_prices(**kw))
     columns = [8, 16, 32, 64]
     f = map(partial(pickleable_ewmac, d), columns)
@@ -14,31 +22,43 @@ def ewmac(inst, **kw):
     f.columns = pd.Series(columns).map(lambda x: "ewmac"+str(x))
     return norm_forecast(f)
 
-# def mr(inst, **kw):
-#     d = norm_vol(inst.panama_prices(**kw))
-#     columns = [2, 4, 8, 16, 32, 64]
-#     f = map(partial(pickleable_ewmac, d), columns)
-#     f = pd.DataFrame(list(f)).transpose() * -1
-#     f = f*10/f.abs().mean()
-#     f.columns = pd.Series(columns).map(lambda x: "mr"+str(x))
-#     return f.clip(-20,20)
+def mr(inst, **kw):
+    """
+    Mean reversion.
+    
+    Never managed to make this profitable on futures, however it is presented here if you want to try it.
+    """
+    d = norm_vol(inst.panama_prices(**kw))
+    columns = [2, 4, 8, 16, 32, 64]
+    f = map(partial(pickleable_ewmac, d), columns)
+    f = pd.DataFrame(list(f)).transpose() * -1
+    f = f*10/f.abs().mean()
+    f.columns = pd.Series(columns).map(lambda x: "mr"+str(x))
+    return f.clip(-20,20)
 
 def carry(inst, **kw):
+    """
+    Generic carry function. 
+    
+    If the Instrument has a spot price series, use that for carry (carry_spot), otherwise use the next contract (carry_next)
+    """
     if hasattr(inst, 'spot'):
         return carry_spot(inst, **kw).rename('carry')
     else:
         return carry_next(inst, **kw).rename('carry')
 
-
 def carry_spot(inst, **kw):
-
-    # Should probably divide this by the time to expiry
+    """
+    Calculates the carry between the current future price and the underlying spot price.
+    """
     f = inst.spot() - inst.market_price().reset_index('contract', drop=True)
     f = f * 365 / inst.time_to_expiry()
     return norm_forecast(f.ewm(90).mean()).rename('carry_spot')
 
 def carry_next(inst, debug=False, **kw):
-
+    """
+    Calculates the carry between the current future price and the next contract we are going to roll to.
+    """
     #    If not trading nearest contract,  Nearer contract price minus current contract price, divided by the time difference
     #    If trading nearest contract, Current contract price minus next contract price, divided by the time difference
 
@@ -77,8 +97,11 @@ def carry_next(inst, debug=False, **kw):
     # return f.mean().rename('carry_next')
     return f.interpolate().rolling(window=90).mean().rename('carry_next')
 
-
 def carry_prev(inst, **kw):
+    """
+    Analogue of carry_next() but looks at the previous contract. Useful when not trading the nearest contract but one further one. Typically you'd do this for instruments where the near contract has deathly skew - e.g. Eurodollar or VIX.
+    """
+    
     current_contract = inst.roll_progression().to_frame().set_index('contract', append=True).swaplevel()
     prev_contract = inst.roll_progression().apply(inst.next_contract, months=inst.trade_only,
                             reverse=True).to_frame().set_index('contract', append=True).swaplevel()
@@ -102,6 +125,9 @@ def carry_prev(inst, **kw):
 
 
 def open_close(inst, **kw):
+    """
+    Read this one in a book, and it was easy to test. Consistently unprofitable in its current form.
+    """
     #yesterdays open-close, divided by std deviation of returns
     inst.panama_prices()
     a = inst.rp().to_frame().set_index('contract', append=True).swaplevel().join(inst.contracts(), how='inner')
@@ -109,9 +135,15 @@ def open_close(inst, **kw):
     return norm_forecast(f).rename('open_close')
 
 def buy_and_hold(inst, **kw):
+    """
+    Returns a fixed forecast of 10.
+    """
     return pd.Series(10, index=inst.pp().index).rename('buy_and_hold')
 
 def sell_and_hold(inst, **kw):
+    """
+    Returns a fixed forecast of -10.
+    """
     return pd.Series(-10, index=inst.pp().index).rename('sell_and_hold')
 
 def breakout_fn(data, lookback, smooth=None):
@@ -131,15 +163,17 @@ def breakout_fn(data, lookback, smooth=None):
     bsmooth = b.ewm(span=smooth, min_periods=np.ceil(smooth / 2.0)).mean()
     return bsmooth
 
-
 def breakout(inst, **kw):
+    """
+    Returns a DataFrame of breakout forecasts based on Rob Carver's work here:
+    https://qoppac.blogspot.com.es/2016/05/a-simple-breakout-trading-rule.html
+    """
     prices = inst.panama_prices(**kw)
     lookbacks = [40, 80, 160, 320]
     res = map(partial(breakout_fn, prices), lookbacks)
     res = pd.DataFrame(list(res)).transpose()
     res.columns = pd.Series(lookbacks).map(lambda x: "brk%d" % x)
     return norm_forecast(res)
-
 
 def _get_month(a):
     return int(str(a)[4:6])

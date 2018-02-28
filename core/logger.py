@@ -38,12 +38,3 @@ def get_logger(name):
         l_handler.setFormatter(l_formatter)
         logger.addHandler(l_handler)
     return logger
-
-# class ibpy_logger(object):
-#     """IBPy's logger module is badly behaved. This monkey patch replaces it with defaults."""
-#     def logger():
-#         # l = logging.getLogger('ibpy')
-#         # l.setLevel(logging.DEBUG)
-#         return get_logger('ibpy')
-# import ib.lib.logger
-# ib.lib.logger = ibpy_logger

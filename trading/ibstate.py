@@ -6,10 +6,8 @@ import pandas as pd
 from ib.ext.Contract import Contract
 from ib.ext.ExecutionFilter import ExecutionFilter
 from ib.ext.Order import Order
-# from ib.ext.CommissionReport import CommissionReport
 from ib.ext.TagValue import TagValue
 from ib.opt import ibConnection
-
 import config.instruments
 import config.portfolios
 import config.settings
@@ -21,9 +19,10 @@ from trading.account import Account
 
 logger = get_logger('ibstate')
 
-
 class IBstate(object):
-
+"""
+Stateful object to help us interact with Interactive Brokers.
+"""
     def __init__(self):
         self.contracts = []
         self.orders_cache = {}

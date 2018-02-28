@@ -11,8 +11,12 @@ import os
 
 
 class accountCurve():
+    """
+    Account curve object for Portfolio and Instrument.
+    
+    Calculates the positions we want to be in, based on the volatility target.
+    """
     def __init__(self, portfolio, capital=500000, positions=None, panama_prices=None, nofx=False, portfolio_weights = 1, **kw):
-
         self.portfolio = portfolio
         self.nofx = nofx
         self.weights = portfolio_weights
@@ -41,6 +45,12 @@ class accountCurve():
 
         self.positions = chunk_trades(self.positions).ffill(limit=5).fillna(0)
 
+    def __repr__(self):
+        """
+        Returns a formatted list of statistics about the account curve.
+        """
+        return pprint.pformat(self.stats_list())
+
     def inst_calc(self):
         """Calculate all the things we need on all the instruments and cache it."""
         try:
@@ -62,6 +72,9 @@ class accountCurve():
             return self.memo_instrument_positions
 
     def rates(self):
+        """
+        Returns a Series or DataFrame of exchange rates.
+        """
         if self.nofx==True:
             return 1
         try:
@@ -69,9 +82,6 @@ class accountCurve():
         except:
             self.memo_rates = pd.DataFrame({k: v['rate'] for k, v in self.inst_calc().items()})
             return self.memo_rates
-
-    def __repr__(self):
-        return pprint.pformat(self.stats_list())
 
     def stats_list(self):
         stats_list = ["sharpe",
@@ -87,6 +97,9 @@ class accountCurve():
         return {k: getattr(self, k)() for k in stats_list}
 
     def returns(self):
+        """
+        Returns a Series/Frame of net returns after commissions, spreads and estimated slippage.
+        """
         return self.position_returns() + self.transaction_returns() + self.commissions() + self.spreads()
 
     def position_returns(self):
@@ -112,7 +125,6 @@ class accountCurve():
         return (config.strategy.daily_volatility_target * self.capital / \
                 (self.returns().sum(axis=1).shift(2).ewm(span=50).std())).clip(0,1.5)
 
-    # @lru_cache(maxsize=1)
     def panama_prices(self):
         if self.panama is not None:
             return pd.DataFrame(self.panama)

@@ -1,3 +1,36 @@
+"""
+
+This file defines the instruments the system has access to.
+
+These may change from time-to-time. If you make reasonable changes, please submit a pull request at https://github.com/chrism2671/PyTrendFollow so we can update it for everybody.
+
+See the defaults in core/instrument.py and extra parameters not shown here.
+
+Schema:
+
+{
+    'name': 'corn',                         # Unique shorthand name which we can refer to this instrument by
+    'contract_data': ['ib', 'quandl'],      # Data providers we should collect and merge data from 
+    'months_traded': [3, 5, 7, 9, 12],      # Months that this contract is available for trading
+    'first_contract': 196003,               # First month this contract traded, so we know when to download from (March 1960)
+    'backtest_from_contract': 199312,       # Backtest from this month (December 1993)
+    'trade_only': [12],                     # Trade only these contract months (December - the 'Z' contract)
+    'quandl_symbol': 'C',                   # Symbol on Quandl representing this contract
+    'quandl_database': 'CME',               # Database on Quandl providing contract data
+    'ib_code': 'ZC',                        # Symbol on Interactive Brokers representing this contract
+    'denomination' 'USD',                   # Currency of the contract. Default is 
+    'roll_day': -20,                        # Day of month to roll to next contract. If it's negative, it's this day in the previous month. For example, if we are in the December contract, a roll_day of -20 means roll on November 20th.
+    'exchange': 'ECBOT',                    # Exchange identifier on Interactive Brokers.
+    'point_value': 50,                      # $ move per point move on the futures contract. Usually equal to the contract multiplier.
+    'spread': 0.25,                         # Estimated spread, for estimating costs
+    'commission': 2.81,                     # Interactive Brokers per contract commission in base currency
+},
+
+
+When setting roll days, we can't let it get to close to the expiry dates. Interactive Brokers require us to be out of a contract well before expiry. The dates for each contract are on this page: https://www.interactivebrokers.co.uk/en/index.php?f=deliveryExerciseActions&p=physical
+
+"""
+
 from core.currency import Currency
 from core.spot import Spot
 
@@ -7,7 +40,6 @@ ODDS = [1, 3, 5, 7, 9, 11]
 EVENS = [2, 4, 6, 8, 10, 12]
 
 instruments_all = {
-
     ### Soft ###
 
     'soft': [
@@ -89,7 +121,6 @@ instruments_all = {
             'spread':0.1,
         }, {
             'name': 'wheat',
-            'contract_unit': 5000,
             'contract_data': ['ib', 'quandl'],
             'quandl_database': 'CME',
             'quandl_symbol': 'W',
@@ -97,7 +128,6 @@ instruments_all = {
             'months_traded': [3, 5, 7, 9, 12],
             'trade_only': [3, 5, 7, 9, 12],
             'roll_day': -20,
-            'slippage': 0.25,
             'ib_code': 'ZW',
             'exchange': 'ECBOT',
             'point_value': 50,
@@ -106,16 +136,12 @@ instruments_all = {
         }, {
             'name': 'corn',
             'contract_data': ['ib', 'quandl'],
-            'contract_unit': 5000,
-            'contract_prefix': 'C',
             'months_traded': [3, 5, 7, 9, 12],
-            'quandl': 'CHRIS/CME_C2',
             'first_contract': 196003,
             'backtest_from_contract': 199312,
             'trade_only': [12],
             'quandl_symbol': 'C',
             'quandl_database': 'CME',
-            'slippage': 0.0025,
             'ib_code': 'ZC',
             'roll_day': -20,
             'exchange': 'ECBOT',
@@ -132,7 +158,6 @@ instruments_all = {
             'roll_day': 7,
             'months_traded': [2, 4, 6, 8, 10, 12],
             'trade_only': [2, 4, 6, 8, 10, 12],
-            'slippage': 0.0025,
             'ib_code': 'HE',
             'exchange': 'GLOBEX',
             'point_value': 400,
@@ -1094,16 +1119,3 @@ instrument_definitions = [entry for group in instruments_all.values() for entry 
     #     'roll_day': 1,
     #     'spread': 1,
 
-# Interactive Brokers Futures Physical Delivery rules
-# https://www.interactivebrokers.co.uk/en/index.php?f=deliveryExerciseActions&p=physical
-
-#KR3, V2X, Eurodollar, MXP, Corn, Eurostoxx, US Gas, Platinum,
-#US2, Leanhog, GBP, VIX, CAC, Copper, Crude
-#Bobl, Wheat, JPY, Nasdaq, Gold,
-#US5, Soybean, AUD, SP500, Pallad,
-#KR10, Livecow, NZD, Kospi,
-#US10, SMI, EUR, OAT, AEX,
-#Bund, BTP, US20
-
-#---
-#    name: 'kr3' https://global.krx.co.kr/contents/GLB/02/0201/0201040501/GLB0201040501.jsp

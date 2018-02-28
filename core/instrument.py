@@ -25,6 +25,13 @@ class Instrument(object):
 
     @classmethod
     def load(self, instruments):
+        """Loads all instruments in the system into a dict so that they can be easily worked with.
+        
+        For example:
+        i = Instruments.load()  # Load all the instrument data to memory 
+        i['corn'].contracts()   # Show the corn contracts
+
+        """
         if instruments == None:
             return {v['name']: Instrument(**v) for v in config.instruments.instrument_definitions}
         else:
@@ -35,24 +42,23 @@ class Instrument(object):
         return self.name
 
     def __init__(self, **kwargs):
-        # Defaults
-        # Back test from contract (not date) e.g. 198512. Doesn't have to be real.
-        self.quandl_data_factor = 1
-        self.backtest_from_contract = False
+        """Initialise the instrument object with defaults, taking overrides from the config/instruments.py file."""
+        self.quandl_data_factor = 1                 # Sometimes Quandl data needs to be multiplied/transformed (e.g. MXP)
+        self.backtest_from_contract = False         # Back test from contract (not date) e.g. 198512. Doesn't have to be a real contract.
         self.backtest_from_year = 1960
         self.roll_day = 14
-        self.roll_shift = 0
+        self.roll_shift = 0                         # Move the roll day forwards (nearer) by this many days if negative, and vice-versa
         self.expiration_month = 0
-        self.expiry = 15  # assume default expiry day
-        self.commission = 2.50  # estimated commission
-        self.spread = 0
-        self.denomination = 'USD'
-        self.months_traded = tuple(range(1, 13))
-        self.trade_only = tuple(range(1, 13))
+        self.expiry = 15                            # Default expiry day.
+        self.commission = 2.50                      # Default broker commission.
+        self.spread = 0                             # Default spread.
+        self.denomination = 'USD'                   # Default demonination.
+        self.months_traded = tuple(range(1, 13))    # 12 months
+        self.trade_only = tuple(range(1, 13))       # 12 months
         self.rules = config.strategy.default_rules
         self.weights = config.strategy.rule_weights
-        self.broker = 'ib'
-        self.bootstrapped_weights = None
+        self.broker = 'ib'                          # Default broker
+        self.bootstrapped_weights = None            # Only used to store results of bootstrapping. Not used for trading.
         self.first_contract = None
         self.contract_data = ['ib', 'quandl']
 
@@ -65,6 +71,13 @@ class Instrument(object):
         self.currency = Currency(self.denomination + config.settings.base_currency)
 
     def calculate(self):
+        """
+        Utility function that calculates the position we want to be in for this contract.
+        
+        Called from Portfolio using multiprocessing to speed things up.
+        
+        Returns a dict with the important things we need in to trade with.
+        """
         if self.currency.rate() is 1:
             rate = pd.Series(1, index=self.panama_prices().index)
         else:
@@ -78,11 +91,13 @@ class Instrument(object):
             }
 
     def latest_price_date(self):
+        """Gets the date of the latest price we've got, to help us calculate how old our data is."""
         current_contract = self.roll_progression().loc[datetime.date.today()]
         latest_price = self.contracts().loc[current_contract].tail(1)
         return latest_price.index[0] # latest price date
 
     def validate(self):
+        """Validates that the instrument has up-to-date data and sane results."""
         d = {
             'is_valid': True,
             'today': pd.to_datetime(datetime.date.today()),
@@ -134,25 +149,40 @@ class Instrument(object):
 ### Pricing
 
     def pp(self, **kw):
+        """
+        Shorthand function for Instrument.panama_prices()
+        """
         return self.panama_prices(**kw)
 
     def rp(self, **kw):
+        """
+        Shorthand function for Instrument.roll_progression()
+        """
         return self.roll_progression(**kw)
 
     @lru_cache(maxsize=1)
     def panama_prices(self):
-        """Does 'panama stitching'- it lines up consecutive contracts so we have a continuous
-         stream of returns that we can apply a moving average to"""
+        """
+        Returns a Series representing a 'continuous future' time series.
+        Our system uses the simplest method - 'panama stitching'. 
+        Absolute prices won't make any sense, but daily returns and trends are preserved. Perfectly suitable for our purposes.
+        """
         return self.contracts()['close'].diff().to_frame().swaplevel().fillna(0).join(
             self.rp().to_frame().set_index('contract',append=True), how='inner').\
             reset_index('contract',drop=True)['close'].cumsum().rename(self.name)
 
     @lru_cache(maxsize=2)
     def return_volatility(self, **kw):
+        """
+        Returns a Series with the EWA volatility of returns for this instrument.
+        """
         return (self.panama_prices() * self.point_value).\
                diff().ewm(span=36, min_periods=36).std() * self.currency.rate(**kw)
 
     def market_price(self):
+        """
+        Returns a series of real market prices for this contract.
+        """
         return self.roll_progression().to_frame().set_index('contract', append=True).\
                swaplevel().join(self.contracts())['close'].swaplevel().dropna()
 
@@ -177,8 +207,10 @@ class Instrument(object):
             rules = self.rules
         return pd.concat(list(map(lambda x: getattr(trading.rules, str(x))(self), rules)), axis=1).dropna()
 
-    # @lru_cache(maxsize=8)
     def weighted_forecast(self, rules=None):
+        """
+        Returns a Series representing the weighted forecast for this instrument.
+        """
         return weight_forecast(self.forecasts(rules=rules), self.weights)
 
     @lru_cache(maxsize=8)
@@ -207,6 +239,9 @@ class Instrument(object):
 
     @lru_cache(maxsize=8)
     def next_contract(self, contract, months=None, reverse=False):
+        """
+        Given a contract, return the next contract in the sequence.
+        """
         if months == None:
             months = self.months_traded
         rot = 1 if reverse else -1
@@ -220,6 +255,15 @@ class Instrument(object):
 
     @lru_cache(maxsize=8)
     def contracts(self, **kw_in):
+        """
+        Returns the filtered contract data.
+        
+        Defaults:
+        active_only = True  # Only returns days with actual trading volume
+        trade_only = True   # Only return contracts we have defined as 'trade_only' in instruments.py
+        recent_only = False # Only return contracts from the last 3 years until today.
+        
+        """
         kw = dict(active_only=True, trade_only=True, recent_only=False)
         kw.update(kw_in)
 
@@ -252,21 +296,35 @@ class Instrument(object):
 
     @lru_cache(maxsize=1)
     def roll_progression(self):
-        "Lists the contracts the system wants to be in depending on the date"
+        """
+        Lists the contracts the system wants to be in depending on the date
+        """
         return generate_roll_progression(self.roll_day, self.trade_only,
                                          self.roll_shift + self.expiration_month * 30)
 
     def expiry_date(self, contract):
+        """
+        Returns the estimated expiry date for this contract.
+        """
         year, month = contract_to_tuple(contract)
         return datetime.date(year, month, self.expiry)
 
     def expiries(self):
+        """
+        Returns a Series of expiry dates for every day in the roll progression.  
+        
+        """
         return pd.to_datetime(self.roll_progression().apply(self.expiry_date))
 
     def time_to_expiry(self):
+        """
+        Returns approximate number of days until the contract expires.
+        Used to calculate carry when comparing a contract with the spot price underneath (e.g. a currency future and the underly exchange rate)
+        """
         return (self.expiries() - self.expiries().index).apply(lambda x: getattr(x, 'days'))
 
-    def plot_contracts(self,start,finish, panama=True):
+    def plot_contracts(self, start, finish, panama=True):
+        """ Function to help visualise individual contract data and stitching. Not used for trading. """
         if panama is False:
             self.roll_progression().to_frame().set_index('contract', append=True).swaplevel().\
                 join(self.contracts(active_only=False)).reset_index().\
