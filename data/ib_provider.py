@@ -249,8 +249,11 @@ class IBProvider(DataProvider):
             return
 
         if msg.errorCode in [200, 162, 354, 321]:
-            c = self.historical_data_req_contract[int(msg.id)]
-            c_str = '%s: %s/%s%s' % (c.m_secType, c.m_exchange, c.m_symbol, c.m_expiry)
+            c = self.historical_data_req_contract.get(int(msg.id))
+            if c is None:
+                c_str = 'No contract data'
+            else:
+                c_str = '%s: %s/%s%s' % (c.m_secType, c.m_exchange, c.m_symbol, c.m_expiry)
             logger.warning('%d: %s (%s)' % (msg.errorCode, ib_errors[msg.errorCode], c_str))
         # elif ... (more error codes can be added and handled here if needed)
         else:
