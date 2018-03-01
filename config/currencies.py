@@ -1,7 +1,28 @@
 from config.settings import base_currency
 
 """
-This file defines currencies exchange rates
+This file defines currencies exchange rates. Loaded into core.currency.Currency object.
+Used for instrument's returns calculation and for some spot prices.
+
+{
+    'code': 'USD' + base_currency,              # Currency pair unique code that we can refer by
+    'currency_data': ['ib', 'quandl'],          # Data providers we should collect and merge data from 
+    'quandl_database': 'CURRFX',                # Database on Quandl providing the data
+    'quandl_symbol': 'USD' + base_currency,     # Symbol on Quandl representing this currency pair
+    'quandl_rate': lambda x: x,                 # See 'ib_rate'
+    'ib_exchange': 'IDEALPRO',                  # Exchange identifier on Interactive Brokers.
+    'ib_symbol': base_currency,                 # Symbol on Interactive Brokers
+    'ib_currency': 'USD',                       # Denomination currency on Interactive Brokers
+    'ib_rate': lambda x: 1.0 / x,               # Sometimes data provider may not have data for
+                                                  the currency pair we need, but have the reversed
+                                                  one (e.g. we need USD/GPB, but there is only
+                                                  GPB/USD). In such case we reverse the rate with a
+                                                  lambda expression to obtain the data we need.
+                                                  This can also be used to multiply the price by
+                                                  some factor or do any other transformation if
+                                                  necessary.
+}
+
 """
 currencies_definitions = [
     {

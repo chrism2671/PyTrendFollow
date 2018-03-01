@@ -3,15 +3,16 @@ import config.spots
 
 
 class Spot(object):
-
+    """
+    Object representing the underlying price for a future contract
+    """
     @classmethod
     def load_all(cls):
+        """Load all spots in the system into a dictionary"""
         return {v['name']: Spot(v['name']) for v in config.spots.spots_definitions}
 
     def __init__(self, name):
-        """
-        Object representing the spot price for a future instrument
-        """
+        """Initialise the spot with defaults, taking overrides from the config/currencies.py"""
         self.name = name
         self.ib_symbol = None
         self.quandl_symbol = None
@@ -26,6 +27,9 @@ class Spot(object):
         return self.name + ' (spot)'
 
     def get(self):
+        """
+        :return: close price as pd.Series
+        """
         data = data_feed.get_spot(self)
         if data is None or data.empty:
             raise Exception("No price data for symbol: %s" % self)

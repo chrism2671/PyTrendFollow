@@ -19,10 +19,11 @@ from trading.account import Account
 
 logger = get_logger('ibstate')
 
+
 class IBstate(object):
-"""
-Stateful object to help us interact with Interactive Brokers.
-"""
+    """
+    Stateful object to help us interact with Interactive Brokers.
+    """
     def __init__(self):
         self.contracts = []
         self.orders_cache = {}

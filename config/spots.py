@@ -1,8 +1,27 @@
 
+"""
+This file defines spot prices for futures. Loaded into core.spot.Spot object.
+Spots are the underlying prices for future contracts, used for trading with "carry spot" rule.
+
+{
+    'name': 'copper',               # Unique name, usually the same as the derivative instrument from config/instruments.py
+    'price_data': ['quandl'],       # Data providers we should collect and merge data from
+    'quandl_database': 'LME',       # Database on Quandl providing the data
+    'quandl_symbol': 'PR_CU',       # Symbol on Quandl
+    'quandl_column': 'Cash Buyer',  # Data column on Quandl to be used as a 'close' price
+    'multiplier': (1/2204.62)       # A factor to multiply the close price by
+    ...
+    'ib_symbol': 'HSI',             # Symbol on Interactive Brokers
+    'ib_exchange': 'HKFE',          # Exchange identifier on Interactive Brokers
+    'denomination': 'HKD',          # Denomination currency on Interactive Brokers
+    'sec_type': 'IND',              # Contract security type on Interactive Brokers
+    ...                               (currently only 'IND' is used, which stands for 'Index')
+    'bitmex_symbol': '.STRXBT',     # Symbol on Bitmex
+    'bitmex_column': 'close'        # Data column on Bitmex to be used as a 'close' price
+},
 
 """
-This file defines spot prices for futures
-"""
+
 spots_definitions = [
 
     # Hard

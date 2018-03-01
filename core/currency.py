@@ -9,15 +9,17 @@ logger = get_logger('currency')
 
 
 class Currency(object):
+    """
+    Object representing currency exchange rate
+    """
 
     @classmethod
     def load_all(cls):
+        """Load all currencies in the system into a dictionary"""
         return {v['code']: Currency(v['code']) for v in config.currencies.currencies_definitions}
 
     def __init__(self, code):
-        """
-        Object representing currency exchange rate
-        """
+        """Initialise the currency with defaults, taking overrides from the config/currencies.py"""
         self.code = code
         self.ib_symbol = None
         self.quandl_symbol = None
@@ -28,6 +30,10 @@ class Currency(object):
             setattr(self, key, value)
 
     def rate(self, nofx=False):
+        """
+        :param nofx: used to disable currency rates in the AccountCurve
+        :return: currency exchange rate as pd.Series, or 1 in special cases
+        """
         if nofx is True:
             return 1
         elif self.code == config.settings.base_currency * 2:
@@ -42,6 +48,9 @@ class Currency(object):
         return self.code
 
     def age(self):
+        """
+        :return: age of the price data in days
+        """
         if self.rate() is 1:
             return 0
         else:
