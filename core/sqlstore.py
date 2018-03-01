@@ -5,6 +5,10 @@ import sqlalchemy.types as types
 from config.settings import mysql_host
 import pandas as pd
 
+"""
+Implementation of the local storage with MySQL database as the backend.
+"""
+
 
 class DateWrapper(types.TypeDecorator):
     """

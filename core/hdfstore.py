@@ -4,8 +4,11 @@ import os
 import threading
 
 """
-* Dir structure for HDF storage:  "[settings.hdf_path]/[provider]/[q_type]/[symbol].h5"
-* For q_type == 'futures' index is ['contract', 'date'], for other quotes index is ['date']
+Implementation of the local storage with HDF5 files as the backend.
+
+* Directories structure for HDF storage:  "[settings.hdf_path]/[provider]/[q_type]/[symbol].h5"
+* For q_type == 'futures' returnes DataFrame with the multi-index ['contract', 'date'],
+  for other quotes types index is ['date']
 """
 lock = threading.Lock()
 
@@ -22,6 +25,9 @@ def fname(symbol, q_type, provider):
 
 
 def read_contract(symbol, contract, provider):
+    """
+    Read a single contract for a future instrument
+    """
     if os.path.exists(fname(symbol, 'futures', provider)):
         data = pd.read_hdf(fname(symbol, 'futures', provider), 'quotes')
         return data.loc[int(contract), :]
@@ -31,6 +37,9 @@ def read_contract(symbol, contract, provider):
 
 
 def read_symbol(symbol, q_type, provider):
+    """
+    Read data from the corresponding HDF file
+    """
     if os.path.exists(fname(symbol, q_type, provider)):
         data = pd.read_hdf(fname(symbol, q_type, provider), 'quotes')
         return data
@@ -57,4 +66,7 @@ def write_data(data, symbol, q_type, provider):
 
 
 def drop_symbol(symbol, q_type, provider):
+    """
+    Remove the corresponding HDF file
+    """
     os.remove(fname(symbol, q_type, provider))

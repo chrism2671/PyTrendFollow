@@ -3,9 +3,16 @@ import core.logger
 from config.settings import data_sources
 logger = core.logger.get_logger('data_feed')
 
+"""
+This file defines functions to pull the contracts data from the local storage for multiple
+data providers and merge them into a single pd.DataFrame. On duplicate index, data providers are
+prioritized in the order they appear in the list in the instrument definition (config/instruments.py) 
+"""
+
 
 def get_instrument(instrument):
     """
+    Get all contracts data for an instrument
     :param instrument: core.trading.Instrument object
     :return: price data as pd.DataFrame
     """
@@ -31,6 +38,7 @@ def get_instrument(instrument):
 
 def get_currency(currency):
     """
+    Get data for a currency
     :param currency: core.currency.Currency object
     :return: rate data as pd.DataFrame
     """
@@ -56,6 +64,7 @@ def get_currency(currency):
 
 def get_spot(spot):
     """
+    Get data for a spot
     :param spot: core.spot.Spot object
     :return: price data as pd.DataFrame
     """
@@ -80,10 +89,23 @@ def get_spot(spot):
 
 
 def get_quotes(provider, **kwargs):
+    """
+    General method to get any quotes of type "others" from a single data provider
+    :param provider: data provider name string
+    :return: price data as pd.DataFrame
+    """
     return _get_data(provider, QuotesType.others, kwargs['database'], kwargs['symbol'])
 
 
 def _get_data(library, q_type, database, symbol, **kwargs):
+    """
+    General method to get quotes data from storage
+    :param library: storage library name (usually corresponds to a data provider name)
+    :param q_type: one of 'futures' | 'currency' | 'others'
+    :param database: local storage database name
+    :param symbol: local storage symbol name
+    :return: pd.DataFrame or None in case of error
+    """
     try:
         return Store(library, q_type, database + '_' + symbol).get()
     except Exception as e:
