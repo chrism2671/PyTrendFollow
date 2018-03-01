@@ -25,25 +25,27 @@ class IBstate(object):
     Stateful object to help us interact with Interactive Brokers.
     """
     def __init__(self):
-        self.contracts = []
-        self.orders_cache = {}
-        self.open_orders_raw = []
+        self.orders_cache = {}      # market orders placed during the current trading session
+        self.open_orders_raw = []   # list of orders that are placed, but not yet executed
         self.order_status_raw = []
-        self.clientId = get_next_id()
-        self.port = getattr(config.settings, 'ib_port', 4001)
-        if os.environ.get('D_HOST') is not None:
+        self.clientId = get_next_id()   # client ID fot TWS terminal
+        self.port = getattr(config.settings, 'ib_port', 4001)   # socket port for TWS terminal
+        if os.environ.get('D_HOST') is not None:    # host for TWS terminal
             self.host = os.environ.get('D_HOST')
         else:
             self.host = 'localhost'
 
-        self.api_delay = 5
-        self.last_error = None
-        self.last_account = None
+        self.api_delay = 5              # Minimal interval between IB API requests in seconds
+        self.last_error = None          # Last API error code, used for error handling
+        self.last_account = None        # Last traded account, used for error handling
+        # Flags used to determine if we're ready for trading
         self.accounts_loaded = False
         self.positions_loaded = False
-        self.accounts = {}
+        self.accounts = {}              # List of IB accounts in a multi-account system
+        # Events for thread synchronization
         self.next_id_event = threading.Event()
         self.open_orders_event = threading.Event()
+        # IB connection objects used to send all API requests
         self.connection = ibConnection(host=self.host, port=self.port, clientId=self.clientId)
 
     def is_ready(self):
@@ -53,6 +55,9 @@ class IBstate(object):
         return self.accounts_loaded and self.positions_loaded
 
     def connect(self):
+        """
+        Establishes a connection to TWS terminal. Automatically retries if an error occurs.
+        """
         while not (hasattr(self.connection, 'isConnected') and self.connection.isConnected()):
             self.accounts_loaded = False
             self.positions_loaded = False
@@ -67,6 +72,10 @@ class IBstate(object):
                 sleep(self.api_delay)
 
     def open_orders(self):
+        """
+        :return: A pd.Series of orders that were placed on the exchange,
+                 but haven't yet been executed
+        """
         self.open_orders_event.wait()
         if len(self.open_orders_raw) > 0:
             return pd.Series(
@@ -78,12 +87,24 @@ class IBstate(object):
             return pd.Series()
 
     def update_open_orders(self):
+        """
+        Send API request to pull the list of open orders for all accounts.
+        Callbacks: self._open_order_handler() and self._open_order_end_handler()
+        """
         self.open_orders_raw.clear()
         self.open_orders_event.clear()
         self.connection.reqAllOpenOrders()
         self.open_orders_event.wait()
 
     def place_order(self, instrument, expiry, quantity, acc=None):
+        """
+        Send API request to place an order on the exchange.
+        :param instrument: core.instrument.Instrument object
+        :param expiry: contract label
+        :param quantity: order size as a signed integer (quantity > 0 means 'BUY'
+                         and quantity < 0 means 'SELL')
+        :param acc: IB account to place order from, if None - the default account will be used
+        """
         contract = Contract()
         contract.m_symbol = instrument.ib_code
         contract.m_secType = 'FUT'
@@ -129,9 +150,10 @@ class IBstate(object):
 
     def sync_portfolio(self, portfolio, acc=None, trade=True):
         """
-        :param portfolio: core.trading.portfolio.Portfolio object
-        :param acc: core.trading.account.Account object
-        :param trade: bool
+        Calculate the ideal positions for a portfolio and place orders on the market
+        :param portfolio: trading.portfolio.Portfolio object
+        :param acc: trading.account.Account object
+        :param trade: bool, if False - will print the positions but won't actually trade
         """
 
         if acc is None:

@@ -36,7 +36,7 @@ console_logger = {
 file_logger = {
     'enabled': True,
     'level': logging.DEBUG,
-    'file_name': os.path.expanduser('~/logs/sagemath.log')
+    'file_name': os.path.expanduser('~/logs/pytrendfollow.log')
 }
 loggly_logger = {
     'enabled': False,
