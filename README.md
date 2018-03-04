@@ -45,8 +45,9 @@ For automated trading with Interactive Brokers, install the latest
     
     `cd PyTrendFollow`
 1. Install requirements:
-    
-    `pip -R scripts/requirements.txt`
+    * install python tkinter (for Linux it's usually present in a distribution repository, e.g.
+      for Ubuntu: `apt-get install python3-tk`)
+    * install Python requirements: `./scripts/install_requirements.sh`
 1. `cp config/settings.py.template config/settings.py`, update the settings file with your API keys,
  data path, etc. If you don't use one of the data sources (IB or Quandl), comment the corresponding
  line in `data_sources`.

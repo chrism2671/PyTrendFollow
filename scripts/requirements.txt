@@ -1,3 +1,5 @@
+cython
+tables
 numpy
 scipy
 matplotlib
@@ -13,4 +15,4 @@ bravado
 pytest
 git+git://github.com/bashtage/arch.git
 mysql-connector==2.1.6
---pre SQLAlchemy --upgrade
+SQLAlchemy==1.2
