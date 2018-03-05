@@ -10,6 +10,7 @@ default_rules = ('ewmac', 'carry', )
 # Scheduled time for trading
 portfolio_sync_time = '07:00'
 
+# Bootstrapped weights for trading rules
 rule_weights = {'carry': 1.0761308295764749,
                 'ewmac16': 0.94565802638498464,
                 'ewmac32': 0.97404151565516006,
@@ -19,6 +20,7 @@ rule_weights = {'carry': 1.0761308295764749,
                 'sell_and_hold': 1,
                 }
 
+# Bootstrapped weights for each instrument in the portfolio
 portfolio_weights = {
              'arabica': 1.0764621086234525,
 		     'aud': 0.74729659791597902,

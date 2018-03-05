@@ -29,6 +29,7 @@ mysql_host = 'mysql+mysqlconnector://[username]:[password]@[host]'
 iblog_host = "mongodb://[username]:[password]@[host]:[port]"
 hdf_path = os.path.expanduser('~/data/quotes')
 
+# Define logging settings
 console_logger = {
     'enabled': True,
     'level': logging.INFO,
@@ -38,6 +39,9 @@ file_logger = {
     'level': logging.DEBUG,
     'file_name': os.path.expanduser('~/logs/pytrendfollow.log')
 }
+# https://www.loggly.com/ - 3rd party service for logging,
+# register to obtain an API key and install Python library to use it
+#  (pip install loggly-python-handler)
 loggly_logger = {
     'enabled': False,
     'level': logging.DEBUG,
