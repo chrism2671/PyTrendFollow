@@ -10,7 +10,7 @@ p_rate = [v['name'] for v in config.instruments.instruments_all['rate']]
 p_index = [v['name'] for v in config.instruments.instruments_all['index']]
 # p_bitmex = [v['name'] for v in config.instruments.instruments_all['bitmex']]
 
-p_trade = [i for i in p_all if i not in (['dax', 'cac', 'aex', 'sp500', 'r2000', 'ftse'])]
+p_trade = [i for i in p_all if i not in (['dax', 'cac', 'aex', 'sp500', 'r2000', 'ftse', 'bitcoin'])]
 
 # Randomly split our portfolio into learning and testing sets
 x = p_trade

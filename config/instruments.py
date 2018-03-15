@@ -565,7 +565,6 @@ instruments_all = {
             'point_value': 10,
             'roll_day': 10,
             'spread': 1,
-            'spot': Spot('eurostoxx').get
         }, {
             'name': 'ftse',
             'fullname': 'FTSE 100 Index',
@@ -601,8 +600,6 @@ instruments_all = {
             'roll_day': 1,
             'spread': 2,
             'expiry': 28,
-            'spot': Spot('hsi').get
-            # 'spot': Index('HSI').close,
         }, {
             #This is the e-mini version
             'name': 'nasdaq',
@@ -654,8 +651,6 @@ instruments_all = {
             'point_value': 10,
             'spread':2,
             'expiry': 15,
-            'spot': Spot('smi').get
-            # 'spot': Index('SSMI').close,
         }, {
             'name': 'sp500', #trade the emini version
             'contract_data': ['quandl'],
