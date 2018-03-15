@@ -91,6 +91,8 @@ For more details on how the system works and how to experiment with it, check ou
 
 This project is dev status. Use at your own risk. We are looking for contributors and bug fixes.
 
+Only tested on Linux for now, but should work on Windows / MacOS.
+
 ## Acknowledgements
 
 This project is based heavily on the work of Rob Carver & the
