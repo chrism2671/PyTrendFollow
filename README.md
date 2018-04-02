@@ -4,7 +4,7 @@
 
 This program trades futures using a systematic trend following strategy, similar to most managed
  futures hedge funds. It produces returns of around ~20% per year, based on a volatility of 25%.
-  You can read more about trend following in the /docs folder. Start with [introduction to trend following](https://github.com/chrism2671/PyTrendFollow/blob/master/docs/Introduction%20to%20Trend%20Following.ipynb)
+  You can read more about trend following in the /docs folder. Start with [introduction to trend following](https://github.com/chrism2671/PyTrendFollow/blob/master/docs/Introduction%20to%20Trend%20Following.ipynb).
   
 ## Features
 * Integration with Interactive Brokers for fully automated trading.
