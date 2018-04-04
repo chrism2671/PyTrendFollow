@@ -134,6 +134,19 @@ def open_close(inst, **kw):
     f = ((a['close']-a['open'])/inst.return_volatility).dropna().reset_index('contract', drop=True)
     return norm_forecast(f).rename('open_close')
 
+def weather_rule(inst, **kw):
+    """
+    They say the most likely weather for tomorrow is today's weather. If today's return was +ve,
+    returns +10 for tomorrow and vice versa.
+    """
+    r = inst.panama_prices().diff()
+    #where today's return is 0, just use yesterday's forecast 
+    r[r==0]=np.nan
+    r = np.sign(r) * 10
+    r.ffill()
+    return r.rename('weather_rule')
+    
+    
 def buy_and_hold(inst, **kw):
     """
     Returns a fixed forecast of 10.
