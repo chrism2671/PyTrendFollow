@@ -26,9 +26,6 @@ def get_instrument(instrument):
         elif p == 'quandl':
             db = instrument.quandl_database
             symbol = instrument.quandl_symbol
-        elif p == 'bitmex':
-            db = ''
-            symbol = instrument.bitmex_symbol
         else:
             raise Exception('Unknown data provider string: %s' % p)
         p_data = _get_data(p, QuotesType.futures, db, symbol)
@@ -52,9 +49,6 @@ def get_currency(currency):
         elif p == 'quandl':
             db = currency.quandl_database
             symbol = currency.quandl_symbol
-        elif p == 'bitmex':
-            db = ''
-            symbol = currency.bitmex_symbol
         else:
             raise Exception('Unknown data provider string: %s' % p)
         p_data = _get_data(p, QuotesType.currency, db, symbol)
@@ -78,9 +72,6 @@ def get_spot(spot):
         elif p == 'quandl':
             db = spot.quandl_database
             symbol = spot.quandl_symbol
-        elif p == 'bitmex':
-            db = ''
-            symbol = spot.bitmex_symbol
         else:
             raise Exception('Unknown data provider string: %s' % p)
         p_data = _get_data(p, QuotesType.others, db, symbol)

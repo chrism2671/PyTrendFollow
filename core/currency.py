@@ -23,7 +23,6 @@ class Currency(object):
         self.code = code
         self.ib_symbol = None
         self.quandl_symbol = None
-        self.bitmex_symbol = None
         self.currency_data = ['ib', 'quandl']
         kwargs = config.currencies.currencies_all[code]
         for key, value in kwargs.items():

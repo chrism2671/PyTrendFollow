@@ -10,7 +10,6 @@ base_currency = 'GBP'
 data_sources = [
     'ib',       # Interactive Brokers (interactivebrokers.com)
     'quandl',   # quandl.com
-    'bitmex'    # bitmex.com
 ]
 
 # Backend to be used as a storage for downloaded quotes. Possible values: 'hdf5' | 'mysql'.
@@ -19,8 +18,7 @@ data_sources = [
 quotes_storage = 'hdf5'
 
 quandl.ApiConfig.api_key = "QUANDL_API_KEY"
-bitmex_api_key = 'BITMEX_API_KEY'
-bitmex_secret_key = 'BITMEX_SECRET_KEY'
+
 # Port configured in IB TWS or Gateway terminal
 ib_port = 4001
 # Insert MySQL connection string if you use it as a data storage

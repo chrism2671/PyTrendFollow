@@ -10,7 +10,6 @@ This program trades futures using a systematic trend following strategy, similar
 * Integration with Interactive Brokers for fully automated trading.
 * Automatic downloading of contract data from Quandl & Interactive Brokers.
 * Automatic rolling of futures contracts.
-* Experimental integration with Bitmex for trading cryptocurrency futures.
 * Trading strategies backtesting on historical data
 * Designed to use Jupyter notebook as an R&D environment.
 
@@ -21,7 +20,6 @@ This program trades futures using a systematic trend following strategy, similar
 The system supports downloading of price data from
  1. [Quandl](https://www.quandl.com/)
  1. [Interactive Brokers](https://www.interactivebrokers.com) (IB)
- 1. [Bitmex](https://www.bitmex.com) (experimental, not discussed in this instruction).
 
 It is recommended (though not required) to have data subscriptions for both Quandl and IB.
  Quandl has more historical contracts and works well for backtesting,

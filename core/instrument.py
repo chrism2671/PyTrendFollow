@@ -1,8 +1,13 @@
 import datetime
 from collections import deque
 from functools import lru_cache
-
-import config.strategy
+import sys
+try:
+    import config.strategy
+except ImportError:
+    print("You need to set up the strategy file at config/strategy.py.")
+    sys.exit()
+    
 from core.currency import Currency
 import numpy as np
 import pandas as pd
@@ -232,8 +237,6 @@ class Instrument(object):
         year, month = contract_to_tuple(contract)
         if self.contract_name_format == 'cbot':
             return self.quandl_symbol + cbot_month_code(month) + str(year)
-        # elif(self.contract_name_format == 'bitmex'):
-        #     return self.quandl_symbol + cbot_month_code(month) + str(year)[2:4]
         else:
             return False
 
@@ -280,7 +283,7 @@ class Instrument(object):
             if kw['trade_only']:
                 month = data.index.to_frame()['contract'] % 100
                 data = data[month.isin(self.trade_only)]
-            if kw['active_only'] and self.broker != 'bitmex':
+            if kw['active_only']:
                 data = data[(data['open'] > 0) & (data['volume'] > 1)]
         return data
 

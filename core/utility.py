@@ -165,10 +165,6 @@ def contract_format(symbol, expiry, format='cbot'):
     year, month = contract_to_tuple(expiry)
     if format == 'cbot':
         return symbol + cbot_month_code(month) + str(year)
-    elif format == 'bitmex':
-        return symbol + cbot_month_code(month) + str(year)[2:4]
-    # elif(self.contract_name_format == 'bitmex'):
-    #     return self.quandl_symbol + cbot_month_code(month) + str(year)[2:4]
     else:
         return False
 

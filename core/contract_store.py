@@ -4,7 +4,7 @@ from enum import Enum
 
 # This list is kept separately from the global config.settings.data_sources, because data may
 # still be written for a data provider, while it is disabled and not used
-providers_list = ['ib', 'quandl', 'bitmex']
+providers_list = ['ib', 'quandl']
 
 
 # Types of data that can be stored. Each type corresponds to a MySQL table or
@@ -26,7 +26,6 @@ columns_mapping = {
     ('ib', 'futures'): {},
     ('ib', 'others'): {},
     ('ib', 'currency'): {'close': 'rate'},
-    # TODO: add mappings for bitmex
 }
 
 

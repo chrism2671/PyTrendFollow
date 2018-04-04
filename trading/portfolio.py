@@ -1,12 +1,23 @@
 import numpy as np
 import pandas as pd
 from functools import lru_cache
+import sys
 
-import config.strategy
+try:
+    import config.strategy
+except ImportError:
+    print("You need to set up the strategy file at config/strategy.py.")
+    sys.exit()
+    
+try:
+    import config.settings
+except ImportError:
+    print("You need to set up the settings file at config/settings.py.")
+    sys.exit()
+    
 from core.instrument import Instrument
 from core.utility import draw_sample, sharpe
 from trading.accountcurve import accountCurve
-import config.settings
 import trading.bootstrap_portfolio as bp
 import seaborn
 import pyprind

@@ -16,7 +16,6 @@ class Spot(object):
         self.name = name
         self.ib_symbol = None
         self.quandl_symbol = None
-        self.bitmex_symbol = None
         self.price_data = ['ib', 'quandl']
         self.multiplier = 1.0
         kwargs = config.spots.spots_all[name]
