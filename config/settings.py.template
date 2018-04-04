@@ -12,8 +12,7 @@ data_sources = [
     'quandl',   # quandl.com
 ]
 
-# Backend to be used as a storage for downloaded quotes. Possible values: 'hdf5' | 'mysql'.
-# MySQL requires a configured server with priveleges to create and write data to tables
+# Backend to be used as a storage for downloaded quotes. Possible values: 'hdf5'
 # HDF5 storage only requires pandas
 quotes_storage = 'hdf5'
 
@@ -21,9 +20,8 @@ quandl.ApiConfig.api_key = "QUANDL_API_KEY"
 
 # Port configured in IB TWS or Gateway terminal
 ib_port = 4001
-# Insert MySQL connection string if you use it as a data storage
-mysql_host = 'mysql+mysqlconnector://[username]:[password]@[host]'
-# Insert MongoDB connection string if you use it as IB logs storage
+
+# Insert MongoDB connection string if you use it as IB logs storage (optional)
 iblog_host = "mongodb://[username]:[password]@[host]:[port]"
 hdf_path = os.path.expanduser('~/data/quotes')
 
@@ -36,12 +34,4 @@ file_logger = {
     'enabled': True,
     'level': logging.DEBUG,
     'file_name': os.path.expanduser('~/logs/pytrendfollow.log')
-}
-# https://www.loggly.com/ - 3rd party service for logging,
-# register to obtain an API key and install Python library to use it
-#  (pip install loggly-python-handler)
-loggly_logger = {
-    'enabled': False,
-    'level': logging.DEBUG,
-    'api_key': 'LOGGLY_API_KEY'
 }

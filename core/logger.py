@@ -1,6 +1,6 @@
 import logging
 import os
-from config.settings import file_logger, console_logger, loggly_logger
+from config.settings import file_logger, console_logger
 
 logging.basicConfig()
 
@@ -26,15 +26,4 @@ def get_logger(name):
         f_handler.setLevel(file_logger['level'])
         f_handler.setFormatter(formatter)
         logger.addHandler(f_handler)
-    if loggly_logger['enabled']:
-        from loggly.handlers import HTTPSHandler
-        l_handler = HTTPSHandler('https://logs-01.loggly.com/inputs/%s/tag/python' %
-                                 loggly_logger['api_key'])
-        l_handler.setLevel(loggly_logger['level'])
-        l_formatter = logging.Formatter('{"loggerName":"%(name)s", "asciTime":"%(asctime)s", "fileName":"%(filename)s",'
-                                        ' "logRecordCreationTime":"%(created)f", "functionName":"%(funcName)s",'
-                                        ' "levelNo":"%(levelno)s", "lineNo":"%(lineno)d", "time":"%(msecs)d",'
-                                        ' "levelName":"%(levelname)s", "message":"%(message)s"}')
-        l_handler.setFormatter(l_formatter)
-        logger.addHandler(l_handler)
     return logger

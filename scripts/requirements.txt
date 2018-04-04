@@ -14,5 +14,3 @@ multiprocessing_on_dill
 bravado
 pytest
 git+git://github.com/bashtage/arch.git
-mysql-connector==2.1.6
-SQLAlchemy==1.2
