@@ -235,10 +235,7 @@ class Instrument(object):
         Convert the contract label to the broker's format
         """
         year, month = contract_to_tuple(contract)
-        if self.contract_name_format == 'cbot':
-            return self.quandl_symbol + cbot_month_code(month) + str(year)
-        else:
-            return False
+        return self.quandl_symbol + cbot_month_code(month) + str(year)
 
     @lru_cache(maxsize=8)
     def next_contract(self, contract, months=None, reverse=False):
