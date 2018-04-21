@@ -23,7 +23,7 @@ ib_port = 4001
 
 # Insert MongoDB connection string if you use it as IB logs storage (optional)
 iblog_host = "mongodb://[username]:[password]@[host]:[port]"
-hdf_path = os.path.expanduser('~/data/quotes')
+hdf_path = os.path('../pricedata/quotes')
 
 # Define logging settings
 console_logger = {
