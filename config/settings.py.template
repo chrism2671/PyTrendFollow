@@ -33,5 +33,5 @@ console_logger = {
 file_logger = {
     'enabled': True,
     'level': logging.DEBUG,
-    'file_name': os.path.expanduser('~/logs/pytrendfollow.log')
+    'file_name': os.path.join("../", "logs/pytrendfollow.log")
 }
