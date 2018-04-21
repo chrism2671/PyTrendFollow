@@ -47,7 +47,7 @@ For automated trading with Interactive Brokers, install the latest
       for Ubuntu: `apt-get install python3-tk`)
     * To compile the binary version of the [arch library](https://pypi.org/project/arch/4.0/), you
       will need the development headers for your version of Python. e.g. for Python 3.5 on Ubuntu,
-      do `sudu apt-get install libpython3.5-dev`
+      do `sudo apt-get install libpython3.5-dev`
     * install Python requirements: `pip3 install -r requirements.txt`
 1. `cp config/settings.py.template config/settings.py`, update the settings file with your API keys,
  data path, etc. If you don't use one of the data sources (IB or Quandl), comment the corresponding
