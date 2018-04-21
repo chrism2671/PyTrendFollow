@@ -5,7 +5,7 @@
 This program trades futures using a systematic trend following strategy, similar to most managed
  futures hedge funds. It produces returns of around ~20% per year, based on a volatility of 25%.
   You can read more about trend following in the /docs folder. Start with [introduction to trend following](https://github.com/chrism2671/PyTrendFollow/blob/master/docs/Introduction%20to%20Trend%20Following.ipynb).
-  
+
 ## Features
 * Integration with Interactive Brokers for fully automated trading.
 * Automatic downloading of contract data from Quandl & Interactive Brokers.
@@ -37,17 +37,14 @@ For automated trading with Interactive Brokers, install the latest
 ### Code
 
 1. Python version 3.* is required
-1. Get the code: 
+1. Get the code:
 
     `git clone https://github.com/chrism2671/PyTrendFollow.git`
-    
+
     `cd PyTrendFollow`
 1. Install requirements:
     * install python tkinter (for Linux it's usually present in a distribution repository, e.g.
-      for Ubuntu: `apt-get install python3-tk`)
-    * To compile the binary version of the [arch library](https://pypi.org/project/arch/4.0/), you
-      will need the development headers for your version of Python. e.g. for Python 3.5 on Ubuntu,
-      do `sudo apt-get install libpython3.5-dev`
+      for Ubuntu: `apt-get install python3-tk`) if necessary.
     * install Python requirements: `pip3 install -r requirements.txt`
 1. `cp config/settings.py.template config/settings.py`, update the settings file with your API keys,
  data path, etc. If you don't use one of the data sources (IB or Quandl), comment the corresponding
@@ -68,7 +65,7 @@ Settings` and make sure that `Socket port` matches the value of `ib_port` in you
     `python download.py ib`
 
     Use the `--concurrent` flag only if you have the concurrent downloads feature enabled on Quandl,
- otherwise you'll hit API requests limit. 
+ otherwise you'll hit API requests limit.
 
 * After the download has completed, make sure the data is valid:
 
@@ -78,11 +75,11 @@ Settings` and make sure that `Socket port` matches the value of `ib_port` in you
     portfolio is not corrupted, is up to date and some other useful information.
 
 * To place your market orders now, update positions and quit:
-    
+
     `python scheduler.py --now --quit`
 
 * To schedule portfolio update for a specific time every day:
-    
+
     `python scheduler.py`
 
 For more details on how the system works and how to experiment with it, check out the `docs/`
