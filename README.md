@@ -45,6 +45,8 @@ For automated trading with Interactive Brokers, install the latest
 1. Install requirements:
     * install python tkinter (for Linux it's usually present in a distribution repository, e.g.
       for Ubuntu: `apt-get install python3-tk`) if necessary.
+    * To compile the binary version of `arch`, you will need the development lirbary for your
+      version of Python. e.g., for Python 3.5 on Ubuntu, use `sudo apt-get install libpython3.5-dev`.
     * install Python requirements: `pip3 install -r requirements.txt`
 1. `cp config/settings.py.template config/settings.py`, update the settings file with your API keys,
  data path, etc. If you don't use one of the data sources (IB or Quandl), comment the corresponding
