@@ -1,0 +1,72 @@
+import numpy as np
+
+# The amount of annual fluctuation allowed for a portfolio
+annual_volatility_target = 0.125
+daily_volatility_target = annual_volatility_target / np.sqrt(252)
+# Assumed capital volume for position calculation (in the base currency)
+capital = 500000
+# Trading rules to use by default if not specified in the instrument definition
+default_rules = ('ewmac', 'carry', )
+# Scheduled time for trading
+portfolio_sync_time = '07:00'
+
+# Bootstrapped weights for trading rules
+rule_weights = {'carry': 1.0761308295764749,
+                'ewmac16': 0.94565802638498464,
+                'ewmac32': 0.97404151565516006,
+                'ewmac64': 1.037272611390585,
+                'ewmac8': 0.96689706277925536,
+                'buy_and_hold': 1,
+                'sell_and_hold': 1,
+                }
+
+# Bootstrapped weights for each instrument in the portfolio
+portfolio_weights = {
+             'arabica': 1.0764621086234525,
+		     'aud': 0.74729659791597902,
+		     # 'bobl': 0.9814458316942235,
+		     'bund': 1.1254544260545285,
+		     'cattle': 0.64460711884422217,
+		     'cocoa': 1.0488721487984123,
+		     'copper': 1.0521931052722646,
+		     'corn': 0.444453118917291,
+		     'cotton': 1.3980293077519761,
+		     'crude': 1.2392045757961074,
+		     'eur': 0.99783156513366777,
+		     'eurodollar': 0.86480269329493398,
+		     'eurooat': 1.424673335923534,
+		     # 'eurostoxx': 0.48127295259975711,
+			 'eurostoxx': 0,
+		     'feeder': 0.8587566361752671,
+		     # 'ftse': 0.79082402930099094,
+		     'gas': 1.6888186395658307,
+		     'gbp': 0.50499944731386159,
+		     'gold': 0.68655819637369997,
+		     # 'hsi': 1.1234630740851541,
+			 'hsi': 0,
+		     'leanhog': 1.3476820013938289,
+		     'longbtp': 1.1655100531388629,
+		     'mxp': 1.2502890117057595,
+		     'nasdaq': 0.99988109957289095,
+		     'nzd': 0.78928436932897361,
+		     'oats': 0.96279417063621475,
+		     'pallad': 1.788833065344186,
+		     'platinum': 1.3626265675542621,
+		     # 'robusta': 0.99046437107570096,
+			 'robusta': 0,
+			 'silver': 0.37040956997717217,
+		     # 'smi': 1.0303104515173107,
+             'smi': 0,
+		     'soybean': 0.44198400941934951,
+		     'soymeal': 0.69622767460724611,
+		     'soyoil': 0.60480786480989479,
+		     # 'sugar': 1.6122731268294883,
+             'sugar': 0,
+		     'us2': 1.3762540456060453,
+		     'us30': 0.59543924706233453,
+		     'vix': 0,
+             'vstoxx': 0,
+		     # 'vix': 1.6757839160024335,
+		     # 'vstoxx': 1.0301670670359759,
+		     'wheat': 0.82110319441126278,
+		     'yen': 0.99016423742465798}
