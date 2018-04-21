@@ -13,4 +13,4 @@ schedule
 multiprocessing_on_dill
 bravado
 pytest
-git+git://github.com/bashtage/arch.git
+arch
