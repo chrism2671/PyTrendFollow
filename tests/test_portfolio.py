@@ -1,4 +1,3 @@
-import trading.start
 import trading.portfolio as portfolio
 import trading.accountcurve as accountcurve
 import config.portfolios

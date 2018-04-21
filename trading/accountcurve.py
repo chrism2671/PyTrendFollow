@@ -7,7 +7,6 @@ import config.strategy
 from core.utility import chunk_trades, sharpe, drawdown
 from multiprocessing_on_dill import Pool #, Process, Manager
 from contextlib import closing
-import os
 
 
 class accountCurve():
