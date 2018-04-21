@@ -23,7 +23,7 @@ ib_port = 4001
 
 # Insert MongoDB connection string if you use it as IB logs storage (optional)
 iblog_host = "mongodb://[username]:[password]@[host]:[port]"
-hdf_path = os.path.expanduser('~/data/quotes')
+hdf_path = os.path.join("../", "price_data/quotes")
 
 # Define logging settings
 console_logger = {
@@ -33,5 +33,5 @@ console_logger = {
 file_logger = {
     'enabled': True,
     'level': logging.DEBUG,
-    'file_name': os.path.expanduser('~/logs/pytrendfollow.log')
+    'file_name': os.path.join("../", "logs/pytrendfollow.log")
 }
