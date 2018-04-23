@@ -2,15 +2,12 @@ import pandas as pd
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 from scipy.optimize import minimize
-# from core.accountcurve import accountCurve
 from core.utility import draw_sample, sortino
 
 """ Find the best weights of instruments in a portfolio """
 
 def bootstrap(portfolio, n=1500, costs=True, **kw):
-    # portfolio.weights = pd.Series(1)
     data = portfolio.curve(portfolio_weights=1,capital=10E7).returns()
-    weights_buffer = pd.DataFrame()
     sample_length = 300
     samples = [draw_sample(data, length=sample_length).index for k in range(0,n)]
     weights = list(mp_optimize_weights(samples, data, **kw))

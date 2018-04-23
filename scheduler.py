@@ -7,7 +7,8 @@ from trading.account import Account
 from core.utility import notify_send
 from time import sleep
 import schedule
-import sys, traceback
+import sys
+import traceback
 from core.logger import get_logger
 from functools import partial
 logger = get_logger('scheduler')
