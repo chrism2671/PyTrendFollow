@@ -2,7 +2,7 @@ import pandas as pd
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 from scipy.optimize import minimize
-from core.utility import draw_sample, sharpe, sortino
+from core.utility import draw_sample, sortino
 
 """ Find the best weights of instruments in a portfolio """
 

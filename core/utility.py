@@ -58,7 +58,7 @@ def expanding_sharpe(p):
 def chunk_trades(j):
     """Take a list of notional positions and filter so that trades are only greater
        than 10% of notional position"""
-    return np.around(np.exp(np.around(np.log(np.abs(j)), decimals=1)).multiply(np.sign(j), axis=0))
+    return np.around(np.exp(np.around(np.log(np.abs(j)[j!=0]), decimals=1)).multiply(np.sign(j), axis=0)).replace(np.nan,0)
 
 
 def drawdown(x):

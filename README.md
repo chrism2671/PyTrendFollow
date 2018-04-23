@@ -4,7 +4,7 @@
 
 This program trades futures using a systematic trend following strategy, similar to most managed
  futures hedge funds. It produces returns of around ~20% per year, based on a volatility of 25%.
-  You can read more about trend following in the /docs folder. Start with [introduction to trend following](https://github.com/chrism2671/PyTrendFollow/blob/master/docs/Introduction%20to%20Trend%20Following.ipynb).
+  You can read more about trend following in the /docs folder. Start with [introduction to trend following](https://github.com/chrism2671/PyTrendFollow/blob/master/docs/Introduction%20to%20Trend%20Following.ipynb). If you just want to play with futures data, see [working with prices](https://github.com/chrism2671/PyTrendFollow/blob/master/docs/Working%20with%20Prices.ipynb).
 
 ## Features
 * Integration with Interactive Brokers for fully automated trading.
@@ -45,7 +45,10 @@ For automated trading with Interactive Brokers, install the latest
 1. Install requirements:
     * install python tkinter (for Linux it's usually present in a distribution repository, e.g.
       for Ubuntu: `apt-get install python3-tk`) if necessary.
-    * install Python requirements: `./scripts/install_requirements.sh`
+    * To compile the binary version of [arch](https://pypi.org/project/arch/4.0/), you will need the
+      development lirbary for your version of Python. e.g., for Python 3.5 on Ubuntu, use 
+      `apt-get install libpython3.5-dev`.
+    * install Python requirements: `pip3 install -r requirements.txt`
 1. `cp config/settings.py.template config/settings.py`, update the settings file with your API keys,
  data path, etc. If you don't use one of the data sources (IB or Quandl), comment the corresponding
  line in `data_sources`.
